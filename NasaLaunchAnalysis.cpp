@@ -51,7 +51,13 @@ TimeCode parse_line(const string& line) {
             vector<string> time_parts = split(time_str, ' '); //use the spaces in the time column to find actual timecode
             string hourMin = time_parts[1];
             vector<string> hourAndMinute = split(hourMin, ':'); //makes a vector containing the hour and minute
-            cout << "Hour: " << hourAndMinute[0] << " Minute: " << hourAndMinute[1] << endl;
+
+            if (hourAndMinute.size() == 2) { //this will only work if there are 2 parts (the hour and minute)
+                unsigned int hours = stoi(hourAndMinute[0]); // convert hour to unsigned int
+                unsigned int minutes = stoi(hourAndMinute[1]); // convert minute to unsigned int
+                cout << hours << ":" << minutes << endl;
+                return TimeCode(hours, minutes, 0);
+            }
         }
     }
     // Return a dummy time if no valid time data is present
@@ -64,7 +70,7 @@ int main() {
     ifstream launchFS;
     string launchTime;
 
-    launchFS.open("Space_Corrected_Short.csv");
+    launchFS.open("Space_Corrected.csv");
 
     if (!launchFS.is_open()) {
       cout << "Could not open file Space_Corrected.csv" << endl;
@@ -74,7 +80,10 @@ int main() {
     //put all launchtimes in a vector
     vector<TimeCode> launchTimes;
     string line;
-
+    
+    //we need to skip the first line which only has the column titles, so we will call it now
+    //for it to be skipped in the real loop
+    getline(launchFS, line);
 
     // Read the file line by line and add them to the vector
     while (getline(launchFS, line)) {
