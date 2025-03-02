@@ -6,19 +6,19 @@ using namespace std;
 
 //initializes each variable hr, min, sec, and t
 TimeCode::TimeCode(unsigned int hr, unsigned int min, long long unsigned int sec){
+    
+    t = (hr * 3600) + (min * 60) + sec;
 
     //account for rollover when assigning
-    while (sec >= 60) {
-        min++;
-        sec -= 60;
-    }
-    while (min >= 60){
-        hr++;
-        min -= 60;
-    }
+    min = min + (sec / 60);
+    sec = sec % 60;
+    
 
-    t = (hr * 3600) + (min * 60) + sec;
+    hr = hr + (min / 60);
+    min = min % 60;
+
 }
+
 
 //copy constructor so that we can modify a version of the time without losing the original
 TimeCode::TimeCode(const TimeCode& tc){
@@ -29,6 +29,7 @@ void TimeCode::SetHours(unsigned int hours){
     if (hours < 0){
         throw invalid_argument("time cannot be negative");
     }
+
     unsigned int min= GetMinutes();
     unsigned int sec = GetSeconds();
 
@@ -90,10 +91,9 @@ long long unsigned int TimeCode::ComponentsToSeconds(unsigned int hr, unsigned i
 string TimeCode::ToString() const{
     //convert to seconds first so that if input is in an incorrect format it can be 
     //outputted with the correct one
-    long long unsigned int totalSeconds = ComponentsToSeconds(GetHours(), GetMinutes(), GetSeconds());
-    unsigned int h = totalSeconds / 3600;
-    unsigned int m = (totalSeconds % 3600) / 60;
-    unsigned int s = totalSeconds % 60;
+    unsigned int h = t / 3600;
+    unsigned int m = (t % 3600) / 60;
+    unsigned int s = t % 60;
     return to_string(h) + ":" + to_string(m) + ":" + to_string(s);
 }
 
