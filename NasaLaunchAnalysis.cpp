@@ -55,7 +55,6 @@ TimeCode parse_line(const string& line) {
             if (hourAndMinute.size() == 2) { //this will only work if there are 2 parts (the hour and minute)
                 unsigned int hours = stoi(hourAndMinute[0]); // convert hour to unsigned int
                 unsigned int minutes = stoi(hourAndMinute[1]); // convert minute to unsigned int
-                cout << hours << ":" << minutes << endl;
                 return TimeCode(hours, minutes, 0);
             }
         }
@@ -87,12 +86,12 @@ int main() {
 
     // Read the file line by line and add them to the vector
     while (getline(launchFS, line)) {
-       // Parse the line and extract the time
-       TimeCode time = parse_line(line);
-       if (time.GetHours() > 0 || time.GetMinutes() > 0 || time.GetSeconds() > 0) {
-           launchTimes.push_back(time);  // Only add valid time values
-       }
-   }
+        // Parse the line and extract the time
+        TimeCode time = parse_line(line);
+        if (time.GetHours() > 0 || time.GetMinutes() > 0 || time.GetSeconds() > 0) {
+            launchTimes.push_back(time);  // Only add valid time values
+        }
+    }
 
     launchFS.close();
 
@@ -100,8 +99,16 @@ int main() {
     TimeCode TotalTime(0, 0, 0);
 
     //add all times to average
-    
+    for(int i = 0; i < launchTimes.size(); ++i){
+        TotalTime = TotalTime + launchTimes[i];
+    }
 
+    TimeCode averageTime = TotalTime / launchTimes.size();
+
+    cout << launchTimes.size() << " DATA POINTS" << endl;
+    cout << "AVERAGE: " << averageTime.ToString() << endl;
+
+    return 1;
 }
 
 
