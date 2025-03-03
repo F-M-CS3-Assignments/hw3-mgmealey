@@ -1,6 +1,4 @@
 
-
-
 #include <ctime> // for time(0)
 #include <iostream> // for cin and cout
 #include <cmath> // for M_PI and others
@@ -99,5 +97,50 @@ void tests(){
 
 int main(){
 	tests();
+    vector<DryingSnapShot> dryingSnapShots;
+    char userInput;
+    
+    cout << "Choose an option: (A)dd, (V)iew Current Items, (Q)uit: ";
+    cin >> userInput;
+
+    while(userInput != 'q' && userInput != 'Q'){
+        if(userInput == 'A' || userInput == 'a'){
+            DryingSnapShot dss;
+            dss.name = "Batch_" + to_string(rand()); //give the batch a random name
+
+            //compute time it needs to dry
+            double radius;
+            cout << "radius: ";
+            cin >> radius; 
+            double sa = get_sphere_sa(radius);
+            TimeCode *tc = compute_time_code(sa);
+
+            //add to vector so that it can be referenced in the future
+            dryingSnapShots.push_back(dss);
+            cout << drying_snap_shot_to_string(dss) << endl;
+
+            //get a new input
+            cout << "Choose an option: (A)dd, (V)iew Current Items, (Q)uit: ";
+            cin >> userInput;
+        } else if (userInput == 'V' || userInput == 'v'){
+            //check if it actually has anything in it first
+            if (dryingSnapShots.empty()) {
+                cout << "No drying snapshots available." << endl;
+            } else { //output each dryingSnapShot
+                for (int i = 0; i < dryingSnapShots.size(); ++i){
+                    cout << drying_snap_shot_to_string(dryingSnapShots[i]);
+                }
+            }
+        } else {
+            cout << "Please choose a valid option: (A)dd, (V)iew Current Items, (Q)uit: ";
+            cin >> userInput;
+        }
+    }
+
+    for (int i = 0; i < dryingSnapShots.size(); ++i){
+        delete dryingSnapShots[i].timeToDry;
+    }
+    dryingSnapShots.clear();
+
 	return 0;
 }
