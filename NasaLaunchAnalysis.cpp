@@ -80,10 +80,6 @@ int main() {
     vector<TimeCode> launchTimes;
     string line;
     
-    //we need to skip the first line which only has the column titles, so we will call it now
-    //for it to be skipped in the real loop
-    getline(launchFS, line);
-
     // Read the file line by line and add them to the vector
     while (getline(launchFS, line)) {
         // Parse the line and extract the time
