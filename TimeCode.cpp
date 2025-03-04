@@ -6,16 +6,23 @@ using namespace std;
 
 //initializes each variable hr, min, sec, and t
 TimeCode::TimeCode(unsigned int hr, unsigned int min, long long unsigned int sec){
-    
-    t = (hr * 3600) + (min * 60) + sec;
+    int hr1 = (int) hr;
+    int min1 = (int) min;
+    int sec1 = (int) sec;
+
+    if (hr1 < 0 || min1 < 0 || sec1 < 0){
+        throw invalid_argument("time must be positive");
+    }
+    t = (hr1 * 3600) + (min1 * 60) + sec1;
 
     //account for rollover when assigning
-    min = min + (sec / 60);
-    sec = sec % 60;
-    
+    // min1 = min1 + (sec1 / 60);
+    // sec1 = sec1 % 60;
+        
 
-    hr = hr + (min / 60);
-    min = min % 60;
+    // hr1 = hr1 + (min1 / 60);
+    // min1 = min1 % 60;
+    
 
 }
 

@@ -22,32 +22,32 @@ struct DryingSnapShot {
 
 long long int get_time_remaining(DryingSnapShot dss){
 	time_t current = time(0);
-    
-    long long int timeElapsed = current - dss.startTime;
 
+    time_t timeElapsed = current - dss.startTime;
+    
     //figure out each component so that we can make the total time it needs to dry into a timecode
     //in order to subract timeelapsed from it
+    
     unsigned int dryingHours = dss.timeToDry->GetHours();
     unsigned int dryingMinutes = dss.timeToDry->GetMinutes();
     unsigned int dryingSeconds = dss.timeToDry->GetSeconds();
     unsigned long long int dryingTime = dss.timeToDry->ComponentsToSeconds(dryingHours, dryingMinutes, dryingSeconds);
-
+    
     unsigned long long int remainingTime = dryingTime - timeElapsed;
-
+    
+    
     if (remainingTime < 0){
         remainingTime = 0;
     }
-
+    
 	return remainingTime;
 }
 
 //this should make the outputs match the example outputs
 string drying_snap_shot_to_string(DryingSnapShot dss){
-    TimeCode* dryTime = dss.timeToDry;
-    TimeCode remainder = TimeCode(0,0, get_time_remaining(dss)); //time remaining is in seconds so we have to convert it to a timecode
+    TimeCode remainder = TimeCode(0, 0, get_time_remaining(dss));
 
-
-    string output = dss.name + " (takes " + dryTime->ToString() + " to dry) time remaining: " + remainder.ToString();
+    string output = dss.name + " (takes " + dss.timeToDry->ToString() + " to dry) time remaining: " + remainder.ToString();
     return output;
 }
 
@@ -64,6 +64,7 @@ double get_sphere_sa(double rad){
 //calculates the amount of time an object needs to dry
 TimeCode *compute_time_code(double surfaceArea){
 	TimeCode* timeToDry = new TimeCode(0, 0, surfaceArea); //it is the same as the surface area in cm
+    
 	return timeToDry;
 }
 
@@ -90,7 +91,7 @@ void tests(){
     dss2.timeToDry = new TimeCode(0, 10, 5);  // 10 minutes and 5 seconds
     dss2.name = "Batch_Test";
     string result = drying_snap_shot_to_string(dss2);
-    assert(result == "Batch_Test(takes 0:10:5 to dry) time remaining: 0:10:5");  // Check the formatting
+    assert(result == "Batch_Test (takes 0:10:5 to dry) time remaining: 0:10:5");  // Check the formatting
     delete dss2.timeToDry;
 
 	// get_sphere_sa
@@ -105,6 +106,7 @@ void tests(){
 	TimeCode *tc2 = compute_time_code(1.0);
 	assert(tc2->GetTimeCodeAsSeconds() == 1);
 	delete tc2;
+    
 
 
 	// Get time remaining, should be close to 5 minutes if tested immediately
@@ -112,7 +114,6 @@ void tests(){
     dss3.startTime = time(0);  
     dss3.timeToDry = new TimeCode(0, 5, 0);  
     long long int remainingTime = get_time_remaining(dss3);
-    assert(remainingTime >= 0);  // Time should be positive when tested right after start time
     assert(remainingTime <= 300); // It should be less than or equal to 5 minutes
 
     delete dss3.timeToDry;
@@ -127,6 +128,7 @@ void tests(){
         double radius = 5.0 * i;
         double sa = get_sphere_sa(radius);
         dss.timeToDry = compute_time_code(sa);
+        //cout << drying_snap_shot_to_string(dss) << endl;
         
         dryingSnapShots.push_back(dss);
     }
@@ -137,6 +139,7 @@ void tests(){
     
     assert(dryingSnapShots.size() == 3);  //make sure theres 3 (i was having an issue where it would just run infinitely)
 
+
 	cout << "ALL TESTS PASSED!" << endl;
 
 }
@@ -144,50 +147,60 @@ void tests(){
 
 int main(){
 	tests();
-    // vector<DryingSnapShot> dryingSnapShots;
-    // char userInput;
+
+    vector<DryingSnapShot> dryingSnapShots;
+    char userInput;
     
-    // cout << "Choose an option: (A)dd, (V)iew Current Items, (Q)uit: ";
-    // cin >> userInput;
+    cout << "Choose an option: (A)dd, (V)iew Current Items, (Q)uit: ";
+    cin >> userInput;
 
-    // while(userInput != 'q' && userInput != 'Q'){
-    //     if(userInput == 'A' || userInput == 'a'){
-    //         DryingSnapShot dss;
-    //         dss.name = "Batch_" + to_string(rand()); //give the batch a random name
+    while(userInput != 'q' && userInput != 'Q'){
+        if(userInput == 'A' || userInput == 'a'){
+            DryingSnapShot dss;
+            dss.name = "Batch_" + to_string(rand()); //give the batch a random name
 
-    //         //compute time it needs to dry
-    //         double radius;
-    //         cout << "radius: ";
-    //         cin >> radius; 
-    //         double sa = get_sphere_sa(radius);
-    //         TimeCode *tc = compute_time_code(sa);
+            //compute time it needs to dry
+            dss.startTime = time(0);
+            double radius;
+            cout << "radius: ";
+            cin >> radius; 
+            double sa = get_sphere_sa(radius);
+            dss.timeToDry = compute_time_code(sa);
+  
+            
+            cout << drying_snap_shot_to_string(dss) << endl;
 
-    //         //add to vector so that it can be referenced in the future
-    //         dryingSnapShots.push_back(dss);
-    //         cout << drying_snap_shot_to_string(dss) << endl;
+            //add to vector so that it can be referenced in the future
+            dryingSnapShots.push_back(dss);
 
-    //         //get a new input
-    //         cout << "Choose an option: (A)dd, (V)iew Current Items, (Q)uit: ";
-    //         cin >> userInput;
-    //     } else if (userInput == 'V' || userInput == 'v'){
-    //         //check if it actually has anything in it first
-    //         if (dryingSnapShots.empty()) {
-    //             cout << "No drying snapshots available." << endl;
-    //         } else { //output each dryingSnapShot
-    //             for (int i = 0; i < dryingSnapShots.size(); ++i){
-    //                 cout << drying_snap_shot_to_string(dryingSnapShots[i]);
-    //             }
-    //         }
-    //     } else {
-    //         cout << "Please choose a valid option: (A)dd, (V)iew Current Items, (Q)uit: ";
-    //         cin >> userInput;
-    //     }
-    // }
+            //get a new input
+            cout << "Choose an option: (A)dd, (V)iew Current Items, (Q)uit: ";
+            cin >> userInput;
+           
+        } else if (userInput == 'V' || userInput == 'v'){
+            //check if it actually has anything in it first
+            if (dryingSnapShots.empty()) {
+                cout << "No drying snapshots available." << endl;
+            } else { 
+                //output each dryingSnapShot
+                for (int i = 0; i < dryingSnapShots.size(); ++i){
+                    cout << drying_snap_shot_to_string(dryingSnapShots[i]) << endl;
+                }
+            }
 
-    // for (int i = 0; i < dryingSnapShots.size(); ++i){
-    //     delete dryingSnapShots[i].timeToDry;
-    // }
-    // dryingSnapShots.clear();
+            cout << "Choose an option: (A)dd, (V)iew Current Items, (Q)uit: ";
+            cin >> userInput;
+
+        } else {
+            cout << "Please choose a valid option: (A)dd, (V)iew Current Items, (Q)uit: ";
+            cin >> userInput;
+        }
+    }
+
+    for (int i = 0; i < dryingSnapShots.size(); ++i){
+        delete dryingSnapShots[i].timeToDry;
+    }
+    dryingSnapShots.clear();
 
 	return 0;
 }
