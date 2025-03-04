@@ -79,30 +79,27 @@ int main() {
     //put all launchtimes in a vector
     vector<TimeCode> launchTimes;
     string line;
+    //make a base timecode so that we can add all of them in order to compute the average
+    TimeCode TotalTime(0, 0, 0);
     
     // Read the file line by line and add them to the vector
     while (getline(launchFS, line)) {
         // Parse the line and extract the time
         TimeCode time = parse_line(line);
         if (time.GetHours() > 0 || time.GetMinutes() > 0 || time.GetSeconds() > 0) {
+            TotalTime = TotalTime + time;
             launchTimes.push_back(time);  // Only add valid time values
         }
     }
 
     launchFS.close();
 
-    //make a base timecode so that we can add all of them in order to compute the average
-    TimeCode TotalTime(0, 0, 0);
-
-    //add all times to average
-    for(int i = 0; i < launchTimes.size(); ++i){
-        TotalTime = TotalTime + launchTimes[i];
-    }
-
     TimeCode averageTime = TotalTime / launchTimes.size();
 
     cout << launchTimes.size() << " DATA POINTS" << endl;
     cout << "AVERAGE: " << averageTime.ToString() << endl;
+
+
 
     return 1;
 }

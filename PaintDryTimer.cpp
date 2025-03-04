@@ -63,9 +63,7 @@ double get_sphere_sa(double rad){
 
 //calculates the amount of time an object needs to dry
 TimeCode *compute_time_code(double surfaceArea){
-	TimeCode* timeToDry = new TimeCode(0, 0, surfaceArea); //it is the same as the surface area in cm
-    
-	return timeToDry;
+	return new TimeCode(0, 0, surfaceArea); //it is the same as the surface area in cm
 }
 
 
@@ -183,7 +181,7 @@ int main(){
                 cout << "No drying snapshots available." << endl;
             } else { 
                 //output each dryingSnapShot
-                for (int i = 0; i < dryingSnapShots.size(); ++i){
+                for (size_t i = 0; i < dryingSnapShots.size(); ++i){
                     cout << drying_snap_shot_to_string(dryingSnapShots[i]) << endl;
                 }
             }
@@ -197,9 +195,10 @@ int main(){
         }
     }
 
-    for (int i = 0; i < dryingSnapShots.size(); ++i){
+    for (size_t i = 0; i < dryingSnapShots.size(); ++i){
         delete dryingSnapShots[i].timeToDry;
     }
+
     dryingSnapShots.clear();
 
 	return 0;
