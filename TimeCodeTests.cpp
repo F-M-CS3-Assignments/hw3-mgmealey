@@ -31,9 +31,8 @@ void TestDefaultConstructor(){
 	cout << "Testing Default Constructor" << endl;
 	TimeCode tc;
 	
-	//cout << "Testing ToString()" << endl;
-	//cout << "tc: " << tc.ToString() << endl;
-	assert(tc.ToString() == "0:0:0");
+	cout << "tc: " << tc.ToString() << endl;
+	assert(tc.ToString() == "0:00:00");
 	
 	
 	cout << "PASSED!" << endl << endl;
@@ -47,7 +46,7 @@ void TestComponentConstructor(){
 	TimeCode tc = TimeCode(0, 0, 0);
 	//cout << "Testing ToString()" << endl;
 	//cout << "tc: " << tc.ToString() << endl;
-	assert(tc.ToString() == "0:0:0");
+	assert(tc.ToString() == "0:00:00");
 	
 	// test 2, Random but "safe" inputs
 	TimeCode tc2 = TimeCode(3, 17, 42);
@@ -61,9 +60,9 @@ void TestComponentConstructor(){
 	
 	// test 4, default values
 	TimeCode tc4 = TimeCode(3, 5);
-	assert(tc4.ToString() == "3:5:0");
+	assert(tc4.ToString() == "3:05:00");
 	TimeCode tc5 = TimeCode(3);
-	assert(tc5.ToString() == "3:0:0");
+	assert(tc5.ToString() == "3:00:00");
 	
 	
 	// test 6, Really really big seconds value
@@ -161,11 +160,11 @@ void TestSetHours(){
 	
 	// test 1
 	tc.SetHours(18);
-	assert(tc.ToString() == "18:5:9");
+	assert(tc.ToString() == "18:05:09");
 	
 	// test 2
 	tc.SetHours(600);
-	assert(tc.ToString() == "600:5:9");	
+	assert(tc.ToString() == "600:05:09");	
 	
 	cout << "PASSED!" << endl << endl;
 }
@@ -177,7 +176,8 @@ void TestSetMinutes(){
 	
 	// test 1
 	tc.SetMinutes(15);
-	assert(tc.ToString() == "8:15:9");
+	cout << tc.ToString() << endl;
+	assert(tc.ToString() == "8:15:09");
 	
 	// test 2
 	try{
@@ -186,7 +186,8 @@ void TestSetMinutes(){
 	catch( const invalid_argument& e ) {
 		//cout << e.what() << endl;
 	}
-	assert(tc.ToString() == "8:15:9");
+	cout << tc.ToString() << endl;
+	assert(tc.ToString() == "8:15:09");
 	
 	cout << "PASSED!" << endl << endl;
 }
@@ -198,7 +199,7 @@ void TestSetSeconds(){
 	
 	// test 1
 	tc.SetSeconds(19);
-	assert(tc.ToString() == "8:5:19");
+	assert(tc.ToString() == "8:05:19");
 	
 	// test 2
 	try{
@@ -206,7 +207,7 @@ void TestSetSeconds(){
 	}
 	catch( const invalid_argument& e) {
 	}
-	assert(tc.ToString() == "8:5:19");
+	assert(tc.ToString() == "8:05:19");
 	
 	cout << "PASSED!" << endl << endl;
 }
@@ -216,9 +217,12 @@ void TestReset(){
 	cout << "Testing Reset" << endl;
 	
 	TimeCode tc1 = TimeCode(57, 62, 39);
-	assert(tc1.ToString() == "58:2:39");
+	assert(tc1.ToString() == "58:02:39");
 	tc1.reset();
-	assert(tc1.ToString() == "0:0:0");
+	
+	cout << tc1.ToString() << endl;
+
+	assert(tc1.ToString() == "0:00:00");
 	
 	cout << "PASSED!" << endl << endl;
 }
@@ -231,13 +235,13 @@ void TestAdd(){
 	TimeCode tc1 = TimeCode(5, 58, 0);
 	TimeCode tc2 = TimeCode(0, 1, 65);
 	TimeCode tc3 = tc1 + tc2;
-	assert(tc3.ToString() == "6:0:5");
+	assert(tc3.ToString() == "6:00:05");
 	
 	// test 2
 	TimeCode tc4 = TimeCode(0, 0, 60);
 	TimeCode tc5 = TimeCode(0, 0, 60);
 	TimeCode tc6 = tc4 + tc5;
-	assert(tc6.ToString() == "0:2:0");
+	assert(tc6.ToString() == "0:02:00");
 	
 	cout << "PASSED!" << endl << endl;
 }
@@ -250,7 +254,7 @@ void TestSubtract(){
 	TimeCode tc1 = TimeCode(1, 0, 0);
 	TimeCode tc2 = TimeCode(0, 50, 0);
 	TimeCode tc3 = tc1 - tc2;
-	assert(tc3.ToString() == "0:10:0");
+	assert(tc3.ToString() == "0:10:00");
 	
 	// test 2
 	TimeCode tc4 = TimeCode(1, 15, 45);
@@ -272,13 +276,13 @@ void TestMultiply(){
 	// test 1
 	TimeCode tc1 = TimeCode(0, 1, 0);
 	TimeCode tc2 = tc1 * 2;
-	assert(tc2.ToString() == "0:2:0");
+	assert(tc2.ToString() == "0:02:00");
 	
 	// test 2
 	TimeCode tc3 = TimeCode(3, 5, 17);
 	TimeCode tc4 = tc3 * 5.5;
 	//cout << "tc4: " << tc4.ToString() << endl;
-	assert(tc4.ToString() == "16:59:3");
+	assert(tc4.ToString() == "16:59:03");
 	
 	// test 3
 	TimeCode tc5 = TimeCode(0, 5, 0);
@@ -288,7 +292,7 @@ void TestMultiply(){
 	// test 4
 	TimeCode tc7 = TimeCode(0, 5, 0);
 	TimeCode tc8 = tc7 * 0.5;
-	assert(tc8.ToString() == "0:2:30");
+	assert(tc8.ToString() == "0:02:30");
 
 	// test 5, negative number test
 	try{
@@ -302,7 +306,7 @@ void TestMultiply(){
 	
 	// test 6, multiply by 0
 	TimeCode tc12 = tc7 * 0;
-	assert(tc12.ToString() == "0:0:0");
+	assert(tc12.ToString() == "0:00:00");
 	
 	cout << "PASSED!" << endl << endl;
 }
@@ -314,12 +318,12 @@ void TestDivide(){
 	// test 1
 	TimeCode tc1 = TimeCode(1, 0, 0);
 	TimeCode tc2 = tc1 / 4;
-	assert(tc2.ToString() == "0:15:0");
+	assert(tc2.ToString() == "0:15:00");
 	
 	// test 2
 	TimeCode tc3 = TimeCode(0, 15, 0);
 	TimeCode tc4 = tc3 / 0.5;
-	assert(tc4.ToString() == "0:30:0");
+	assert(tc4.ToString() == "0:30:00");
 	
 	// test 3 (negative value test)
 	try{

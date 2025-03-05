@@ -96,7 +96,10 @@ string TimeCode::ToString() const{
     unsigned int m = (t % 3600) / 60;
     unsigned int s = t % 60;
 
-    if (s < 10){ 
+    if (s < 10 && m < 10){ 
+        return to_string(h) + ":0" + to_string(m) + ":0" + to_string(s);
+    }
+    if (s < 10){
         return to_string(h) + ":" + to_string(m) + ":0" + to_string(s);
     }
     if (m < 10){

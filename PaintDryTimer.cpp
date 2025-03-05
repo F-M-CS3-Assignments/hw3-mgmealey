@@ -137,6 +137,11 @@ void tests(){
     
     assert(dryingSnapShots.size() == 3);  //make sure theres 3 (i was having an issue where it would just run infinitely)
 
+    //clear test vector
+    for (size_t i = 0; i < dryingSnapShots.size(); ++i){
+        delete dryingSnapShots[i].timeToDry;
+    }
+    dryingSnapShots.clear();
 
 	cout << "ALL TESTS PASSED!" << endl;
 
