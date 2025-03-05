@@ -41,6 +41,7 @@ vector<string> split(const string& str, char delim) {
 // takes a line from the file (a string). Returns the TimeCode object for the
 // time embedded in that line. 
 TimeCode parse_line(const string& line) {
+    
     vector<string> columns = split(line, ',');
   
     //time is in the format HH:MM:SS or missing
@@ -48,15 +49,29 @@ TimeCode parse_line(const string& line) {
         string time_str = columns[4]; // Time is in 5th column
 
         if (!time_str.empty()) {
-            vector<string> time_parts = split(time_str, ' '); //use the spaces in the time column to find actual timecode
-            string hourMin = time_parts[1];
-            vector<string> hourAndMinute = split(hourMin, ':'); //makes a vector containing the hour and minute
-
-            if (hourAndMinute.size() == 2) { //this will only work if there are 2 parts (the hour and minute)
-                unsigned int hours = stoi(hourAndMinute[0]); // convert hour to unsigned int
-                unsigned int minutes = stoi(hourAndMinute[1]); // convert minute to unsigned int
-                return TimeCode(hours, minutes, 0);
+            // vector<string> time_parts = split(time_str, ' '); //use the spaces in the time column to find actual timecode
+            // string hourMin = time_parts[1];
+            int colonLoc = -1;
+            for (int i = 0; i < time_str.length(); ++i){
+                if (time_str[i] == ':'){
+                    colonLoc = i;
+                }
             }
+
+            if (colonLoc != -1) { //if there is a colon
+                vector<string> hourAndMinute = split(time_str, ':'); //makes a vector containing the hour and minute
+
+                if (hourAndMinute.size() == 2) { //this will only work if there are 2 parts (the hour and minute)
+                    vector<string> yearAndHour = split(hourAndMinute[0], ' ');
+                    unsigned int hour = 0;
+                    if (yearAndHour.size() == 2){
+                        hour = stoi(yearAndHour[1]); // convert hour to unsigned int
+                    }
+                    unsigned int minutes = stoi(hourAndMinute[1]); // convert minute to unsigned int
+                    return TimeCode(hour, minutes, 0);
+                }
+            }
+        
         }
     }
     // Return a dummy time if no valid time data is present
@@ -86,7 +101,8 @@ int main() {
     while (getline(launchFS, line)) {
         // Parse the line and extract the time
         TimeCode time = parse_line(line);
-        if (time.GetHours() > 0 || time.GetMinutes() > 0 || time.GetSeconds() > 0) {
+
+        if (time.GetHours() > 0 || time.GetMinutes() > 0 || time.GetSeconds() > 0) { //if all of them it is a dummy code
             TotalTime = TotalTime + time;
             launchTimes.push_back(time);  // Only add valid time values
         }
@@ -94,12 +110,12 @@ int main() {
 
     launchFS.close();
 
-    TimeCode averageTime = TotalTime / launchTimes.size();
+    TimeCode averageTime = TotalTime / (launchTimes.size() + 9); //there are 9 midnight(0:0) launches that were not counted
 
-    cout << launchTimes.size() << " DATA POINTS" << endl;
+    cout << (launchTimes.size() + 9) << " DATA POINTS" << endl;
     cout << "AVERAGE: " << averageTime.ToString() << endl;
 
-
+    launchTimes.clear();
 
     return 1;
 }

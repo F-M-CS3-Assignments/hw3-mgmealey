@@ -98,9 +98,12 @@ string TimeCode::ToString() const{
 
     if (s < 10){ 
         return to_string(h) + ":" + to_string(m) + ":0" + to_string(s);
-    } else {
-        return to_string(h) + ":" + to_string(m) + ":" + to_string(s);
     }
+    if (m < 10){
+        return to_string(h) + ":0" + to_string(m) + ":" + to_string(s);
+    }
+    return to_string(h) + ":" + to_string(m) + ":" + to_string(s);
+    
 }
 
 TimeCode TimeCode::operator+(const TimeCode& other) const{
