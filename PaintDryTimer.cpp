@@ -33,10 +33,10 @@ long long int get_time_remaining(DryingSnapShot dss){
     unsigned int dryingSeconds = dss.timeToDry->GetSeconds();
     unsigned long long int dryingTime = dss.timeToDry->ComponentsToSeconds(dryingHours, dryingMinutes, dryingSeconds);
     
-    unsigned long long int remainingTime = dryingTime - timeElapsed;
+    long long int remainingTime = dryingTime - timeElapsed;
     
     
-    if (remainingTime < 0){
+    if (remainingTime <= 0){
         remainingTime = 0;
     }
     
@@ -46,8 +46,15 @@ long long int get_time_remaining(DryingSnapShot dss){
 //this should make the outputs match the example outputs
 string drying_snap_shot_to_string(DryingSnapShot dss){
     TimeCode remainder = TimeCode(0, 0, get_time_remaining(dss));
+    string output;
 
-    string output = dss.name + " (takes " + dss.timeToDry->ToString() + " to dry) time remaining: " + remainder.ToString();
+    output = dss.name + " (takes " + dss.timeToDry->ToString() + " to dry) time remaining: " + remainder.ToString();
+
+    if(remainder == 0){
+        output = dss.name + " (takes " + dss.timeToDry->ToString() + " to dry) DONE!!";
+
+    }
+
     return output;
 }
 
@@ -89,7 +96,7 @@ void tests(){
     dss2.timeToDry = new TimeCode(0, 10, 5);  // 10 minutes and 5 seconds
     dss2.name = "Batch_Test";
     string result = drying_snap_shot_to_string(dss2);
-    assert(result == "Batch_Test (takes 0:10:5 to dry) time remaining: 0:10:5");  // Check the formatting
+    assert(result == "Batch_Test (takes 0:10:05 to dry) time remaining: 0:10:05");  // Check the formatting
     delete dss2.timeToDry;
 
 	// get_sphere_sa
